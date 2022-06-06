@@ -7,6 +7,7 @@ use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use App\Admin\Controllers\BaseController;
+use Illuminate\Support\Facades\Redis;
 
 class SysBannerController extends BaseController
 {
@@ -25,7 +26,6 @@ class SysBannerController extends BaseController
 
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
-        
             });
         });
     }
@@ -41,6 +41,12 @@ class SysBannerController extends BaseController
             $form->display('id');
             $form->image('image')->autoUpload();
             $this->sys['banner']['url_show'] ? $form->text('url') : '';
+            $form->saved(function(Form $form, $result){
+                Redis::hmset("banner:{$form->getKey()}", [
+                    'image'=> $form->repository()->model()->image,
+                    'url'=> $form->repository()->model()->url
+                ]);
+            });
         });
     }
 }

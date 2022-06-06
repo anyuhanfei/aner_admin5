@@ -11,15 +11,9 @@ use Dcat\Admin\Widgets\Tab;
 use App\Models\Sys\SysSetting as SysSettingModel;
 use Illuminate\Support\Facades\Redis;
 
-class SysSettingController extends BaseController
-{
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
-    protected function grid()
-    {
+class SysSettingController extends BaseController{
+
+    protected function grid(){
         return Grid::make(new SysSetting(), function (Grid $grid) {
             $grid->wrap(function(){
                 $tab = Tab::make();
@@ -33,26 +27,9 @@ class SysSettingController extends BaseController
 
     private function tab($id){
         return Grid::make(SysSettingModel::where('parent_id', $id), function (Grid $grid) {
-            $grid->column('id')->sortable()->width('10%')->display(function($grid){
-                Redis::set('input_type:' . $grid->number(), $this->input_type);
-            });
+            $grid->column('id')->sortable()->width('10%');
             $grid->column('title');
-            var_dump(Redis::get('input_type:' . strval($grid->number())));exit;
-            $grid->column('value')->display(function() use($grid){
-                switch ($this->input_type) {
-                    case 'select':
-                        $grid->column('value')->select(explode(' ', $this->value))->width("40%");
-                        break;
-                    case 'onoff':
-                        $grid->column('value')->switch();
-                        break;
-                    default:
-                        $grid->column('value')->editable()->width("40%");
-                        break;
-                }
-                // return $this->value;
-            });
-            // $grid->column('value')->editable()->width("40%");
+            $grid->column('value')->editable()->width("40%");
             if($this->sys['setting']['line_button_show'] == false){
                 $grid->disableViewButton();
                 $grid->disableEditButton();
@@ -101,16 +78,19 @@ class SysSettingController extends BaseController
     {
         return Form::make(new SysSetting(), function (Form $form) {
             $form->hidden('value');
-            $form->input('remark', '');
+            $form->input('remark', $form->model()->remark);
 
             $form->display('id');
             $form->select('parent_id')->options(SysSettingModel::where('parent_id', 0)->get()->pluck('title', 'id'));
             $form->text('title');
-            $form->select('input_type')->options(['text'=> '普通字符', 'select'=> '下拉选项', 'redio'=> '单选项', 'onoff'=> '开关']);
-
-            $form->text('remark')->help('仅在select、redio类型的表单中有效，每个选项以空格隔开');
+            # ['text'=> '普通字符', 'select'=> '下拉选项', 'redio'=> '单选项', 'onoff'=> '开关']
+            $form->select('input_type')->options(['text'=> '普通字符']);
+            // $form->text('remark')->help('仅在select、redio类型的表单中有效，每个选项以空格隔开');
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();
+            });
+            $form->saved(function(Form $form, $result){
+                Redis::set("setting:{$form->model()->id}", $form->model()->value);
             });
             $form->disableResetButton();
             $form->disableViewCheck();

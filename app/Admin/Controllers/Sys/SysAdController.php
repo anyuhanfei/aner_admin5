@@ -8,6 +8,7 @@ use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use App\Admin\Controllers\BaseController;
 use App\Models\Sys\SysAd as SysAdModel;
+use Illuminate\Support\Facades\Redis;
 
 class SysAdController extends BaseController
 {
@@ -88,6 +89,15 @@ class SysAdController extends BaseController
                     if($value == '' && $image == '' && $content == ''){
                         return $form->response()->error('值、图片、内容请至少填写一项');
                     }
+                }
+            });
+            $form->saved(function(Form $form, $result){
+                if($form->repository()->model()->parent_id != 0){
+                    Redis::hmset("ad:{$form->getKey()}", [
+                        'image'=> $form->repository()->model()->image,
+                        'value'=> $form->repository()->model()->value,
+                        'content'=> $form->repository()->model()->content,
+                    ]);
                 }
             });
         });

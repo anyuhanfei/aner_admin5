@@ -22,7 +22,7 @@ class UserController extends BaseController
     {
         return Grid::make(new User(), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $this->sys['users']['avatar_show'] ? $grid->column('avatar')->image('avatar', 40, 40) : '';
+            $this->sys['users']['avatar_show'] ? $grid->column('avatar')->image('', 40, 40) : '';
             $this->sys['users']['nickname_show'] ? $grid->column('nickname') : '';
             foreach ($this->sys['users']['user_identity'] as $field) {
                 $grid->column($field);
@@ -66,7 +66,7 @@ class UserController extends BaseController
      */
     protected function detail($id)
     {
-        return Show::make($id, new User(), function (Show $show) {
+        return Show::make($id, new User(), function (Show $show) use($id){
             $show->row(function (Show\Row $show) {
                 $show->width(3)->id;
                 foreach ($this->sys['users']['user_identity'] as $field) {
@@ -77,6 +77,7 @@ class UserController extends BaseController
                 $show->width(3)->avatar->image('', 40, 40);
                 $show->width(4)->nickname;
             });
+            $show->column()->UserDetail($id);
         });
     }
 
@@ -138,6 +139,7 @@ class UserController extends BaseController
                 });
                 //判断是否填写了密码，并加密
                 $form->saving(function (Form $form) {
+                    $form->avatar = $form->avatar ?? '';
                     if($form->password == null){
                         $form->deleteInput('password');
                     }else{
