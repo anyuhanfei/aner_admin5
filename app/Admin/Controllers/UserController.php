@@ -10,6 +10,8 @@ use Dcat\Admin\Show;
 use App\Models\User\Users as UsersModel;
 use App\Models\User\UserFunds;
 use App\Models\User\UserDetail;
+use App\Models\Log\LogUserOperation;
+use App\Models\Log\LogUserFund;
 
 class UserController extends BaseController
 {
@@ -66,18 +68,56 @@ class UserController extends BaseController
      */
     protected function detail($id)
     {
-        return Show::make($id, new User(), function (Show $show) use($id){
+        return Show::make($id, new User(['log_operation', 'detail']), function (Show $show) use($id){
             $show->row(function (Show\Row $show) {
-                $show->width(3)->id;
-                foreach ($this->sys['users']['user_identity'] as $field) {
-                    $show->width(4)->$field;
-                }
+                $show->width(5)->id;
+                $show->width(4)->avatar->image('', 40, 40);
             });
             $show->row(function (Show\Row $show) {
-                $show->width(3)->avatar->image('', 40, 40);
+                foreach ($this->sys['users']['user_identity'] as $field) {
+                    $show->width(5)->$field;
+                }
                 $show->width(4)->nickname;
             });
-            $show->column()->UserDetail($id);
+            
+            $show->row(function (Show\Row $show) {
+                $show->width(6)->field('detail.id_card_username', '真实姓名');
+                $show->width(6)->field('detail.id_card_code', '身份证号');
+            });
+            $show->relation('会员操作记录', function ($model) {
+                $grid = new Grid(new LogUserOperation);
+                $grid->model()->where('uid', $model->id);
+                $grid->id()->width('15%');
+                $grid->content('操作')->width('40%');
+                $grid->ip()->width('15%');;
+                $grid->created_at();
+                $grid->disableRefreshButton();
+                $grid->disableFilterButton();
+                $grid->disableCreateButton();
+                $grid->disableRowSelector();
+                $grid->disableActions();
+                return $grid;
+            });
+            $show->relation('会员资产记录', function ($model) {
+                $grid = new Grid(new LogUserFund);
+                $grid->model()->where('uid', $model->id);
+                $grid->id()->width("10%");
+                $grid->column('number', '金额')->width("10%");
+                $sys_user = $this->sys['users'];
+                $grid->column('coin_type', '资金类型')->width("10%")->display(function() use($sys_user){
+                    return $sys_user['user_funds'][$this->coin_type];
+                });
+                $grid->column('fund_type', '操作类型')->width("10%");
+                $grid->column('content', '详细说明')->width("20%");
+                $grid->column('remark', '备注')->width('15%');
+                $grid->column('created_at');
+                $grid->disableRefreshButton();
+                $grid->disableFilterButton();
+                $grid->disableCreateButton();
+                $grid->disableRowSelector();
+                $grid->disableActions();
+                return $grid;
+            });
         });
     }
 

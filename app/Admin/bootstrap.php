@@ -24,7 +24,3 @@ use Dcat\Admin\Show;
  * Admin::js('/packages/prettydocs/js/main.js');
  *
  */
-use Dcat\Admin\Show\Field;
-use App\Admin\Extensions\Show\UserDetail;
-
-Field::extend('UserDetail', UserDetail::class);

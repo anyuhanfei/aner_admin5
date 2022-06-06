@@ -13,6 +13,6 @@ class LogUserOperation extends Model
     protected $table = 'log_user_operation';
 
     public function user(){
-        return $this->hasOne(Users::class, 'id', 'uid');
+        return $this->belongsTo(Users::class);
     }
 }
