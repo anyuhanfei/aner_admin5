@@ -3,6 +3,7 @@ return [
     'labels' => [
         'User' => '会员管理',
         'user' => '会员管理',
+        'users'=> '会员列表'
     ],
     'fields' => [
         'avatar' => '头像',

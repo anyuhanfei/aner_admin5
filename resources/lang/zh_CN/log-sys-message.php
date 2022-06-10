@@ -3,6 +3,8 @@ return [
     'labels' => [
         'LogSysMessage' => '系统消息',
         'log-sys-message' => '系统消息',
+        'log'=> '应用管理',
+        'sysmessage'=> '系统消息'
     ],
     'fields' => [
         'uid' => '会员id',

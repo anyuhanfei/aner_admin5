@@ -3,6 +3,8 @@ return [
     'labels' => [
         'SysSetting' => '系统设置',
         'sys-setting' => '系统设置',
+        'sys'=> '应用管理',
+        'setting'=> '系统设置'
     ],
     'fields' => [
         'parent_id' => '分类名称',

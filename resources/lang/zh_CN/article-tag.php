@@ -3,6 +3,8 @@ return [
     'labels' => [
         'ArticleTag' => '文章标签',
         'article-tag' => '文章标签',
+        'article'=> '文章管理',
+        'tag'=> '文章标签'
     ],
     'fields' => [
         'name' => '标签名称',

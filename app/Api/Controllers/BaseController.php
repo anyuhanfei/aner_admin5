@@ -31,7 +31,7 @@ class BaseController extends Controller{
     public function send_sms(\App\Api\Requests\SendSmsRequest $request){
         $phone = $request->input('phone');
         $sms_code = rand(100000, 999999);
-        Redis::set("sms_code:{$sms_code}:{$phone}", '', 60 * 5);
+        Redis::setex("sms_code:{$sms_code}:{$phone}", 60 * 5, '');
         return success('发送成功');
     }
 }

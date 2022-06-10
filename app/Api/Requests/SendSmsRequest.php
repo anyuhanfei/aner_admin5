@@ -11,7 +11,7 @@ class SendSmsRequest extends BaseRequest{
 
     public function rules(){
         return [
-            'phone' => ['required', 'size:11'],
+            'phone' => ['required', 'size:11', new \App\Api\Rules\SendSmsPhoneVerify],
             'type' => ['required', Rule::in(['register', 'other'])],
         ];
     }

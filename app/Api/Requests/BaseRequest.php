@@ -4,6 +4,7 @@ namespace App\Api\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Redis;
 
 class BaseRequest extends FormRequest{
     /**

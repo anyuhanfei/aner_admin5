@@ -28,7 +28,7 @@ class LoginController extends BaseController{
      *
      * @return void
      */
-    public function password_login(Request $request){
+    public function password_login(\App\Api\Requests\Login\PasswordLoginRequest $request){
         $phone = $request->input('phone', '');
         $password = $request->input('password', '');
         //获取会员信息并验证
@@ -53,7 +53,7 @@ class LoginController extends BaseController{
      * @param Request $request
      * @return void
      */
-    public function sms_login(\App\Api\Requests\SmsLoginRequest $request){
+    public function sms_login(\App\Api\Requests\Login\SmsLoginRequest $request){
         $phone = $request->input('phone');
         $user = Users::where('phone', $phone)->first();
         $is_register = 0;

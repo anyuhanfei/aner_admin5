@@ -146,4 +146,20 @@ class Users extends Model
     public static function verify_password($user_obj, $password){
         return self::encryption_password($password, $user_obj->password_salt) == $user_obj->password;
     }
+
+    public static function get_data($field, $value){
+        if($field != 'id'){
+            $value = self::where($field, $value)->value('id');
+            $field = 'id';
+        }
+        $user_obj = json_decode(Redis::get('user_data:' . $value));
+        if($user_obj === null){
+            $user_obj = self::find($value);
+            if(!$user_obj){
+                return $user_obj;
+            }
+            Redis::set('user_data:' . $value, $user_obj->toJson());
+        }
+        return $user_obj;
+    }
 }

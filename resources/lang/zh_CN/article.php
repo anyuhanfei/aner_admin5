@@ -1,8 +1,8 @@
 <?php 
 return [
     'labels' => [
-        'Article' => 'Article',
-        'article' => 'Article',
+        'Article' => '文章管理',
+        'article' => '文章管理',
     ],
     'fields' => [
         'tag_ids' => '标签',

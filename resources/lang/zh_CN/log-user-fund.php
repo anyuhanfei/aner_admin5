@@ -3,6 +3,8 @@ return [
     'labels' => [
         'LogUserFund' => '会员资产记录',
         'log-user-fund' => '会员资产记录',
+        'log'=> '会员管理',
+        'userfund'=> '会员资产记录'
     ],
     'fields' => [
         'uid' => '会员id',

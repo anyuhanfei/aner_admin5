@@ -1,11 +1,13 @@
 <?php
 namespace App\Api\Rules;
 
+use App\Models\User\Users;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Support\Facades\Redis;
 
-class SmsCodeVerify implements Rule, DataAwareRule{
+
+class PasswordLoginVerify implements Rule, DataAwareRule{
     protected $data = [];
 
     public function setData($data){
@@ -14,10 +16,14 @@ class SmsCodeVerify implements Rule, DataAwareRule{
     }
 
     public function passes($attribute, $value){
-        return Redis::get("sms_code:{$this->data['sms_code']}:{$this->data['phone']}") !== null;
+        $user = Users::get_data('phone', $this->data['phone']);
+        if(!$user){
+            return false;
+        }
+        return Users::verify_password($user, $value);
     }
 
     public function message(){
-        return '短信验证码输入错误';
+        return "账号或密码错误";
     }
 }
