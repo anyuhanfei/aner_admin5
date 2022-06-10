@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'aner_admin',
+    'name' => 'aner admin后台管理系统',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<img src="/vendor/dcat-admin/images/logo.png" width="35"> &nbsp;Dcat Admin',
+    'logo' => '<img src="/static/logo/aner_admin_favicon.png"> &nbsp; aner admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<img src="/vendor/dcat-admin/images/logo.png">',
+    'logo-mini' => '<img src="/static/logo/aner_admin_favicon.png">',
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ return [
      | Set a default avatar for newly created users.
      |
      */
-    'default_avatar' => '@admin/images/default-avatar.jpg',
+    'default_avatar' => '/static/logo/aner_admin_favicon.png',
 
     /*
     |--------------------------------------------------------------------------

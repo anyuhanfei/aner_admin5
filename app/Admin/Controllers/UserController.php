@@ -144,7 +144,7 @@ class UserController extends BaseController
                 }
                 //将输入的密码加密
                 $form->saving(function (Form $form) {
-                    [$form->password, $form->password_salt] = UsersModel::admin_set_password($form->password);
+                    [$form->password, $form->password_salt] = UsersModel::set_password($form->password);
                     $form->parent_id = $form->parent_id ?? 0;
                 });
                 // 同步创建资产表与详情表
@@ -183,7 +183,7 @@ class UserController extends BaseController
                     if($form->password == null){
                         $form->deleteInput('password');
                     }else{
-                        [$form->password, $form->password_salt] = UsersModel::admin_set_password($form->password);
+                        [$form->password, $form->password_salt] = UsersModel::set_password($form->password);
                     }
                     if($form->level_password == null){
                         $form->deleteInput('level_password');
