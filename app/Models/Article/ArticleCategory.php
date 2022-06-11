@@ -14,5 +14,6 @@ class ArticleCategory extends Model
     use SoftDeletes;
 
     protected $table = 'article_category';
+    protected $guarded = [];
 
 }

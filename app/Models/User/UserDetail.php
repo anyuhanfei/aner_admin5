@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserDetail extends Model{
     public $timestamps = false;
-    protected $fillable = ['id'];
+    protected $guarded = [];
     protected $table = "user_detail";
 
     public static function create_data($uid){

@@ -92,13 +92,7 @@ class SysAdController extends BaseController
                 }
             });
             $form->saved(function(Form $form, $result){
-                if($form->repository()->model()->parent_id != 0){
-                    Redis::hmset("ad:{$form->getKey()}", [
-                        'image'=> $form->repository()->model()->image,
-                        'value'=> $form->repository()->model()->value,
-                        'content'=> $form->repository()->model()->content,
-                    ]);
-                }
+                Redis::del("ad");
             });
         });
     }

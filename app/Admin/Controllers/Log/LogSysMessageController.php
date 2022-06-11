@@ -8,6 +8,7 @@ use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use App\Admin\Controllers\BaseController;
 use App\Models\User\Users;
+use Illuminate\Support\Facades\Cache;
 
 class LogSysMessageController extends BaseController
 {
@@ -84,6 +85,13 @@ class LogSysMessageController extends BaseController
             $form->saving(function (Form $form) {
                 $form->content = $form->content ?? '';
                 $form->uid = $form->uid ?? 0;
+            });
+            $form->saved(function(Form $form, $result){
+                if($form->model()->uid == 0){
+                    Cache::tags(["sys_message"])->flush();
+                }else{
+                    Cache::tags(["sys_message:{$form->model()->uid}"])->flush();
+                }
             });
             $form->disableViewCheck();
             $form->disableEditingCheck();

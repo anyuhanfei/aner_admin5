@@ -51,5 +51,8 @@ return [
     "sys_message"=> [
         'image_show'=> false,
         'content_show'=> false,
+        // 列表已读，如果设置为true，则获取系统消息列表后就将列表中的消息设置为已读
+        // 如果设置为false，则在获取系统消息详情时将此消息设置为已读
+        'list_read'=> true,
     ],
 ];

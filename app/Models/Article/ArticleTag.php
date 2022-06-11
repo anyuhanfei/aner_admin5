@@ -13,5 +13,6 @@ class ArticleTag extends Model
     use SoftDeletes;
 
     protected $table = 'article_tag';
+    protected $guarded = [];
 
 }

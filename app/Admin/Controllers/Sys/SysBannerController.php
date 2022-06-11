@@ -42,10 +42,7 @@ class SysBannerController extends BaseController
             $form->image('image')->autoUpload();
             $this->sys['banner']['url_show'] ? $form->text('url') : '';
             $form->saved(function(Form $form, $result){
-                Redis::hmset("banner:{$form->getKey()}", [
-                    'image'=> $form->repository()->model()->image,
-                    'url'=> $form->repository()->model()->url
-                ]);
+                Redis::del("banner");
             });
         });
     }

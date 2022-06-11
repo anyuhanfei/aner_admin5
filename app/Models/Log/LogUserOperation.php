@@ -11,6 +11,7 @@ class LogUserOperation extends Model
 {
 	use HasDateTimeFormatter;
     protected $table = 'log_user_operation';
+    protected $guarded = [];
 
     public function user(){
         return $this->belongsTo(Users::class);
