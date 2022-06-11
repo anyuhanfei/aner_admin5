@@ -19,7 +19,7 @@ class SysNoticeController extends BaseController
     protected function grid()
     {
         return Grid::make(new SysNotice(), function (Grid $grid) {
-            switch($this->sys['notice']['type']) {
+            switch(config('project.notice.type')) {
                 case '单条富文本':
                     SysNoticeModel::init();
                     $grid->column('title');
@@ -39,12 +39,11 @@ class SysNoticeController extends BaseController
                     $grid->disableCreateButton();
                     break;
             }
-            $this->sys['notice']['image_show'] ? $grid->column('image')->image('', 40, 40) : '';
+            config('project.notice.image_show') ? $grid->column('image')->image('', 40, 40) : '';
             $grid->column('created_at');
             $grid->disableRowSelector();
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
-        
             });
         });
     }
@@ -80,15 +79,15 @@ class SysNoticeController extends BaseController
     {
         return Form::make(new SysNotice(), function (Form $form) {
             $form->display('id');
-            $this->sys['notice']['image_show'] ? $form->image('image')->autoUpload() : '';
-            switch($this->sys['notice']['type']) {
+            config('project.notice.image_show') ? $form->image('image')->autoUpload() : '';
+            switch(config('project.notice.type')) {
                 case '单条富文本':
                     $form->text('title');
-                    $form->editor('content')->height('600')->disk($this->sys['upload_disk']);
+                    $form->editor('content')->height('600')->disk(config('project.upload_disk'));
                     break;
                 case '多条富文本':
                     $form->text('title');
-                    $form->editor('content')->height('600')->disk($this->sys['upload_disk']);
+                    $form->editor('content')->height('600')->disk(config('project.upload_disk'));
                     break;
                 default:
                     $form->text('title');

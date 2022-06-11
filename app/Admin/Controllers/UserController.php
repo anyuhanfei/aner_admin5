@@ -24,12 +24,12 @@ class UserController extends BaseController
     {
         return Grid::make(new User(), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $this->sys['users']['avatar_show'] ? $grid->column('avatar')->image('', 40, 40) : '';
-            $this->sys['users']['nickname_show'] ? $grid->column('nickname') : '';
-            foreach ($this->sys['users']['user_identity'] as $field) {
+            config('project.users.avatar_show') ? $grid->column('avatar')->image('', 40, 40) : '';
+            config('project.users.nickname_show') ? $grid->column('nickname') : '';
+            foreach(config('project.users.user_identity') as $field){
                 $grid->column($field);
             }
-            $sys_user = $this->sys['users'];
+            $sys_user = config('project.users');
             $grid->colum('资金')->display(function() use($sys_user){
                 $str = '';
                 foreach ($sys_user['user_funds'] as $key => $value) {
@@ -74,12 +74,12 @@ class UserController extends BaseController
                 $show->width(4)->avatar->image('', 40, 40);
             });
             $show->row(function (Show\Row $show) {
-                foreach ($this->sys['users']['user_identity'] as $field) {
+                foreach (config('project.users.user_identity') as $field) {
                     $show->width(5)->$field;
                 }
                 $show->width(4)->nickname;
             });
-            
+
             $show->row(function (Show\Row $show) {
                 $show->width(6)->field('detail.id_card_username', '真实姓名');
                 $show->width(6)->field('detail.id_card_code', '身份证号');
@@ -103,7 +103,7 @@ class UserController extends BaseController
                 $grid->model()->where('uid', $model->id);
                 $grid->id()->width("10%");
                 $grid->column('number', '金额')->width("10%");
-                $sys_user = $this->sys['users'];
+                $sys_user = config('project.users');
                 $grid->column('coin_type', '资金类型')->width("10%")->display(function() use($sys_user){
                     return $sys_user['user_funds'][$this->coin_type];
                 });
@@ -130,16 +130,16 @@ class UserController extends BaseController
         return Form::make(User::with('funds'), function (Form $form) {
             $form->hidden('password_salt');
             if($form->isCreating()){
-                $this->sys['users']['avatar_show'] ? $form->image('avatar')->autoUpload()->required() : '';
-                foreach ($this->sys['users']['user_identity'] as $field) {
+                config('project.users.avatar_show') ? $form->image('avatar')->autoUpload()->required() : '';
+                foreach(config('project.users.user_identity') as $field){
                     $form->text($field)->required();
                 }
-                $this->sys['users']['avatar_show'] ? $form->text('nickname')->required() : '';
+                config('project.users.nickname_show') ? $form->text('nickname')->required() : '';
                 $form->text('password')->required();
-                if($this->sys['users']['avatar_show']){
+                if(config('project.users.level_password_show')){
                     $form->text('level_password')->required();
                 }
-                if($this->sys['users']['parent_show']){
+                if(config('project.users.parent_show')){
                     $form->select('parent_id')->options(UsersModel::all()->pluck('nickname', 'id'));
                 }
                 //将输入的密码加密
@@ -155,24 +155,24 @@ class UserController extends BaseController
             }else{
                 $form->tab('基本信息', function(Form $form){
                     $form->display('id');
-                    $this->sys['users']['avatar_show'] ? $form->image('avatar')->autoUpload() : '';
-                    foreach ($this->sys['users']['user_identity'] as $field) {
+                    config('project.users.avatar_show') ? $form->image('avatar')->autoUpload() : '';
+                    foreach(config('project.users.user_identity') as $field){
                         $form->text($field);
                     }
-                    $this->sys['users']['avatar_show'] ? $form->text('nickname') : '';
+                    config('project.users.nickname_show') ? $form->text('nickname') : '';
                 });
                 $form->tab('密码', function(Form $form){
                     $form->text('password')->customFormat(function(){
                         return '';
                     })->help('不填写则不修改');
-                    if($this->sys['users']['avatar_show']){
+                    if(config('project.users.level_password_show')){
                         $form->text('level_password')->customFormat(function(){
                             return '';
                         })->help('不填写则不修改');
                     }
                 });
                 $form->tab('资产', function(Form $form){
-                    $user_funds = $this->sys['users']['user_funds'];
+                    $user_funds = config('project.users.user_funds');
                     foreach ($user_funds as $key => $value) {
                         $form->number('funds.' . $key, $value);
                     }

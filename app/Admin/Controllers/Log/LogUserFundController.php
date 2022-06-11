@@ -20,15 +20,13 @@ class LogUserFundController extends BaseController
         return Grid::make(new LogUserFund(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('uid');
-            $sys_user = $this->sys['users'];
+            $sys_user = config('project.users');
             $grid->column('user_identity')->display(function() use($sys_user){
                 $identity = $sys_user['user_identity'][0];
                 return $this->user->$identity;
             });
             $grid->column('number');
-            $grid->column('coin_type')->display(function() use($sys_user){
-                return $sys_user['user_funds'][$this->coin_type];
-            });
+            $grid->column('coin_type');
             $grid->column('fund_type');
             $grid->column('content')->width("15%");
             $grid->column('remark')->width('10%');

@@ -22,7 +22,7 @@ class LogSysMessageController extends BaseController
         return Grid::make(new LogSysMessage(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('uid');
-            $sys_user = $this->sys['users'];
+            $sys_user = config('project.users');
             $grid->column('user_identity')->display(function() use($sys_user){
                 if($this->uid == 0){
                     return "所有会员";
@@ -31,8 +31,8 @@ class LogSysMessageController extends BaseController
                 return $this->user->$identity;
             });
             $grid->column('title');
-            $this->sys['sys_message']['image_show'] ? $grid->column('image')->image('', 40, 40) : '';
-            $this->sys['sys_message']['content_show'] ? '' : $grid->disableViewButton();
+            config('project.sys_message.image_show') ? $grid->column('image')->image('', 40, 40) : '';
+            config('project.sys_message.content_show') ? '' : $grid->disableViewButton();
             $grid->column('created_at');
             $grid->filter(function (Grid\Filter $filter) use($sys_user) {
                 $filter->equal('id');
@@ -76,9 +76,9 @@ class LogSysMessageController extends BaseController
             $form->display('id');
             $form->select('uid')->options(Users::all()->pluck('nickname', 'id'))->help('不选择表示所有会员');
             $form->text('title')->required();
-            $this->sys['sys_message']['image_show'] ? $form->image('image')->autoUpload()->required() : '';
-            if($this->sys['sys_message']['content_show']){
-                $form->editor('content')->height('600')->disk($this->sys['upload_disk'])->required();
+            config('project.sys_message.image_show') ? $form->image('image')->autoUpload()->required() : '';
+            if(config('project.sys_message.content_show')){
+                $form->editor('content')->height('600')->disk(config('project.upload_disk'))->required();
             }else{
                 $form->hidden('content');
             }

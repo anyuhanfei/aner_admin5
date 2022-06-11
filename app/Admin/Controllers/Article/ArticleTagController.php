@@ -19,7 +19,7 @@ class ArticleTagController extends BaseController
         return Grid::make(new ArticleTag(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('name');
-            $this->sys['article']['tag_image_show'] ? $grid->column('image')->image('', 40, 40) : '';
+            config('project.article.tag_image_show') ? $grid->column('image')->image('', 40, 40) : '';
 
             $grid->disableViewButton();
 
@@ -42,7 +42,7 @@ class ArticleTagController extends BaseController
 
             $form->display('id');
             $form->text('name');
-            $this->sys['article']['tag_image_show'] ? $form->image('image')->autoUpload() : '';
+            config('project.article.tag_image_show') ? $form->image('image')->autoUpload() : '';
 
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();

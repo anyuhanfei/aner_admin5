@@ -21,7 +21,7 @@ class SysBannerController extends BaseController
         return Grid::make(new SysBanner(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('image')->image('', 60, 60);
-            $this->sys['banner']['url_show'] ? $grid->column('url') : '';
+            config('project.banner.url_show') ? $grid->column('url') : '';
             $grid->disableViewButton();
 
             $grid->filter(function (Grid\Filter $filter) {
@@ -40,7 +40,7 @@ class SysBannerController extends BaseController
         return Form::make(new SysBanner(), function (Form $form) {
             $form->display('id');
             $form->image('image')->autoUpload();
-            $this->sys['banner']['url_show'] ? $form->text('url') : '';
+            config('project.banner.url_show') ? $form->text('url') : '';
             $form->saved(function(Form $form, $result){
                 Redis::del("banner");
             });
