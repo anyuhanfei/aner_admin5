@@ -6,6 +6,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
+/**
+ * TODO 修改密码，忘记密码，修改手机号，退出登录，文章相关，上传头像，修改昵称， 支付
+ */
 class BaseController extends Controller{
     public function __construct(Request $request){
         // 获取当前登录的会员信息

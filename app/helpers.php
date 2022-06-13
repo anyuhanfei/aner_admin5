@@ -49,3 +49,31 @@ function create_captcha($number, $type = 'figure'){
     }
     return $resstr;
 }
+
+function https_request($url,$data=null){
+    //初始化curl
+    $curl = curl_init();
+    //curlopt_url
+    curl_setopt($curl,CURLOPT_URL,$url);
+    //curlopt_ssl_verifypeer禁止 CURL 验证对等证书
+    curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,FALSE);
+    //curlopt_ssl_verifyhost禁止验证host
+    curl_setopt($curl,CURLOPT_SSL_VERIFYHOST,FALSE);
+    //验证$data
+    if(!empty($data)){
+        //curlopt_post
+        curl_setopt($curl,CURLOPT_POST,1);
+        //curl_postfieleds
+        curl_setopt($curl,CURLOPT_POSTFIELDS,$data);
+    }
+    //curlopt_returntransfer
+    curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
+    //Content-Type: application/json 修改
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json; charset=utf-8',
+        'Content-Length: ' . strlen($data)
+    ));
+    $output = curl_exec($curl);
+    curl_close($curl);
+    return $output;
+}

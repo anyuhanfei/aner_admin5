@@ -89,6 +89,12 @@ class SysSettingController extends BaseController{
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();
             });
+            $form->saving(function (Form $form) {
+                if($form->isCreating()){
+                    $form->value = $form->value ?? '';
+                    $form->parent_id = $form->parent_id ?? 0;
+                }
+            });
             $form->saved(function(Form $form, $result){
                 Redis::set("setting:{$form->model()->id}", $form->model()->value);
             });
