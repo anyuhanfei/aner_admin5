@@ -2,7 +2,7 @@
 
 namespace App\Api\Middleware;
 
-use App\Models\User\Users;
+use App\Api\Repositories\User\UsersRepositories;
 use Closure;
 
 class UserTokenVerify{
@@ -18,10 +18,12 @@ class UserTokenVerify{
         if(!$request->hasHeader('token')){
             return error('请先登录');
         }
-        $uid = Users::use_token_get_uid($request->header('token'));
+        $UsersRepositories = new UsersRepositories();
+        $uid = $UsersRepositories->use_token_get_uid($request->header('token'));
         if($uid == 0){
             return error('请先登录');
         }
+        $request->merge(['uid' => $uid]);
         return $next($request);
     }
 }

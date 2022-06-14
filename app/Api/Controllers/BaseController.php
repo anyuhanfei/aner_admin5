@@ -1,24 +1,23 @@
 <?php
 namespace App\Api\Controllers;
 
-use App\Models\User\Users;
+use App\Api\Service\UserService;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+use App\Api\Service\Trigonal\SmsService;
 
-/**
- * TODO 修改密码，忘记密码，修改手机号，退出登录，文章相关，上传头像，修改昵称， 支付
- */
+
 class BaseController extends Controller{
     public function __construct(Request $request){
         // 获取当前登录的会员信息
         $this->uid = 0;
         $this->user = null;
+        $user_service = new UserService();
         if($request->hasHeader('token')){
-            $this->uid = Users::use_token_get_uid($request->header('token'));
+            $this->user = $user_service->use_token_get_user($request->header('token'));
         }
-        if($this->uid != 0){
-            $this->user = Users::find($this->uid);
+        if($this->user !== null){
+            $this->uid = $this->user->id;
         }
         // 获取部分系统设置
         $this->setting['identity_field'] = config('project.users.user_identity')[0];
@@ -33,8 +32,8 @@ class BaseController extends Controller{
      */
     public function send_sms(\App\Api\Requests\SendSmsRequest $request){
         $phone = $request->input('phone');
-        $sms_code = rand(100000, 999999);
-        Redis::setex("sms_code:{$sms_code}:{$phone}", 60 * 5, '');
+        $sms_service = new SmsService();
+        $sms_service->send_sms($phone);
         return success('发送成功');
     }
 }

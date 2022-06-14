@@ -33,12 +33,6 @@ class LoginController extends BaseController{
         $password = $request->input('password', '');
         //获取会员信息并验证
         $user = Users::where($this->setting['identity_field'], $phone)->first();
-        if(!$user){
-            return error('手机号或密码错误');
-        }
-        if(Users::verify_password($user, $password) == false){
-            return error('手机号或密码错误');
-        }
         //生成token并绑定
         $token = Users::set_token($user->id);
         //返回信息
