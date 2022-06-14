@@ -13,7 +13,7 @@ use App\Api\Service\UserLogService;
 class UserLogController extends BaseController{
     public function __construct(Request $request, UserLogService $user_log_service){
         parent::__construct($request);
-        $this->user_log_service = $user_log_service;
+        $this->service = $user_log_service;
     }
 
     /**
@@ -26,7 +26,7 @@ class UserLogController extends BaseController{
     public function fund_log(Request $request){
         $page = $request->input('page', 1);
         $limit = $request->input('limit', 2);
-        return success('资产流水日志', $this->user_log_service->fund_log($this->uid, $page, $limit));
+        return success('资产流水日志', $this->service->fund_log($this->uid, $page, $limit));
     }
 
     /**
@@ -38,7 +38,7 @@ class UserLogController extends BaseController{
     public function sys_message_log(Request $request){
         $page = $request->input('page', 1);
         $limit = $request->input('limit', 10);
-        return success('系统消息', $this->user_log_service->sys_message_log($this->uid, $page, $limit));
+        return success('系统消息', $this->service->sys_message_log($this->uid, $page, $limit));
     }
 
     /**
@@ -49,6 +49,6 @@ class UserLogController extends BaseController{
      */
     public function sys_message_detail(Request $request){
         $id = $request->input('id', 0);
-        return success('系统消息', $this->user_log_service->sys_message_log($this->uid, $id));
+        return success('系统消息', $this->service->sys_message_log($this->uid, $id));
     }
 }

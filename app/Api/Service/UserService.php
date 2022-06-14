@@ -42,7 +42,7 @@ class UserService{
         $uid = $this->repositories->use_token_get_uid($token);
         $user = null;
         if($uid != 0){
-            $user = $this->repositories->use_id_get_data($uid);
+            $user = $this->repositories->get_data('id', $uid);
         }
         return $user;
     }

@@ -22,6 +22,12 @@ class SysNoticeRepositories{
         return $values;
     }
 
+    /**
+     * 获取公告详情
+     *
+     * @param int $id 详情id
+     * @return void
+     */
     public function getone($id){
         do{
             $value = Redis::hget("notice", $id);

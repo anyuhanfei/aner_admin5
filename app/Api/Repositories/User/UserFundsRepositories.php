@@ -7,6 +7,12 @@ use App\Api\Repositories\Log\LogUserFundRepositories;
 class UsersRepositories{
     protected $eloquentClass = Model::class;
 
+    /**
+     * 创建数据
+     *
+     * @param int $uid 会员id
+     * @return void
+     */
     public function create_data($uid){
         return $this->eloquentClass::create([
             'id'=> $uid,

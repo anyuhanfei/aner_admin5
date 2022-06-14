@@ -7,7 +7,7 @@ use App\Api\Service\SysService;
 class SysController extends BaseController{
     public function __construct(Request $request){
         parent::__construct($request);
-        $this->sys_service = new SysService();
+        $this->service = new SysService();
     }
 
     /**
@@ -16,7 +16,7 @@ class SysController extends BaseController{
      * @return void
      */
     public function banner(){
-        return success('轮播图', $this->sys_service->get_banners());
+        return success('轮播图', $this->service->get_banners());
     }
 
     /**
@@ -27,7 +27,7 @@ class SysController extends BaseController{
      */
     public function notice(Request $request){
         $id = $request->input('id', 0);
-        return success('公告', $this->sys_service->get_notice($id));
+        return success('公告', $this->service->get_notice($id));
     }
 
     /**
@@ -38,6 +38,6 @@ class SysController extends BaseController{
      */
     public function ad(Request $request){
         $id = $request->input('id', 0);
-        return success('广告', $this->sys_service->get_ad($id));
+        return success('广告', $this->service->get_ad($id));
     }
 }

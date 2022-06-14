@@ -32,12 +32,26 @@ class LogUserFundRepositories{
         ]);
     }
 
+    /**
+     * 获取日志列表
+     *
+     * @param int $uid 会员id
+     * @param int $page 页面
+     * @param int $limit 条数
+     * @return void
+     */
     public function get_list($uid, $page, $limit){
         return Cache::tags("{$this->cache_prefix}:{$uid}")->remember("{$this->cache_prefix}:{$uid}:{$page}:{$limit}", 86400, function() use($limit, $uid){
             return $this->eloquentClass::where('uid', $uid)->select(['number', 'coin_type', 'fund_type', 'created_at'])->orderBy('id', 'desc')->simplePaginate($limit);
         });
     }
 
+    /**
+     * 清除缓存
+     *
+     * @param int $uid 会员id
+     * @return void
+     */
     public function delete_cache($uid){
         Cache::tags(["{$this->cache_prefix}:{$uid}"])->flush();
         return true;

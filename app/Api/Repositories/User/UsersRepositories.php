@@ -5,7 +5,7 @@ namespace App\Api\Repositories\User;
 use App\Models\User\Users as Model;
 use App\Models\User\UserFunds;
 use App\Models\User\UserDetail;
-
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 
@@ -120,30 +120,20 @@ class UsersRepositories{
     }
 
     /**
-     * 获取指定数据
+     * 通过指定字段获取会员信息
      *
      * @param [type] $field
      * @param [type] $value
      * @return void
      */
-    public function get_data($field, $value){
+    public function get_data($field, $value, $select = ['*']){
         if($field != 'id'){
-            $value = $this->eloquentClass::where($field, $value)->value('id');
+            $value = Cache::remember("user_identity:{$field}:{$value}", 86400, function() use($field, $value){
+                return $this->eloquentClass::where($field, $value)->value('id');
+            });
             $field = 'id';
         }
-        $user_obj = json_decode(Redis::get('user_data:' . $value));
-        if($user_obj === null){
-            $user_obj = $this->eloquentClass::find($value);
-            if(!$user_obj){
-                return $user_obj;
-            }
-            Redis::set('user_data:' . $value, $user_obj->toJson());
-        }
-        return $user_obj;
-    }
-
-    public function use_id_get_data($uid, $select=['*']){
-        return $this->eloquentClass::select($select)->find($uid);
+        return $this->eloquentClass::select($select)->find($value);
     }
 
     /**
@@ -158,5 +148,10 @@ class UsersRepositories{
             $user_eloquent->$key = $value;
         }
         return $user_eloquent->save();
+    }
+
+    public function delete_cache($id){
+        Redis::set('user_data:' . $id, null);
+        return true;
     }
 }
