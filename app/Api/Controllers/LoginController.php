@@ -3,14 +3,17 @@ namespace App\Api\Controllers;
 
 use App\Api\Controllers\BaseController;
 
-use App\Models\User\Users;
-use Illuminate\Auth\Events\Validated;
+use App\Api\Service\UserService;
+
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Validator;
 
 class LoginController extends BaseController{
+    public function __construct(Request $request){
+        parent::__construct($request);
+        $this->service = new UserService();
+    }
+
     /**
      * 注册
      *
@@ -29,16 +32,9 @@ class LoginController extends BaseController{
      * @return void
      */
     public function password_login(\App\Api\Requests\Login\PasswordLoginRequest $request){
-        $phone = $request->input('phone', '');
+        $identity = $request->input('identity', '');
         $password = $request->input('password', '');
-        //获取会员信息并验证
-        $user = Users::where($this->setting['identity_field'], $phone)->first();
-        //生成token并绑定
-        $token = Users::set_token($user->id);
-        //返回信息
-        return success('登录成功', array_merge(self::return_user_data($user), [
-            'user_token'=> $token,
-        ]));
+        return success('登录成功', $this->service->login($this->setting['identity_field'], $identity, 'password'));
     }
 
     /**
@@ -49,17 +45,7 @@ class LoginController extends BaseController{
      */
     public function sms_login(\App\Api\Requests\Login\SmsLoginRequest $request){
         $phone = $request->input('phone');
-        $user = Users::where('phone', $phone)->first();
-        $is_register = 0;
-        if(!$user){  // 注册
-            $user = Users::create_data($phone);
-            $is_register = 1;
-        }
-        $token = Users::set_token($user->id);
-        return success('登录成功', array_merge(self::return_user_data($user), [
-            'user_token'=> $token,
-            'is_register'=> $is_register,
-        ]));
+        return success('登录成功', $this->service->login('phone', $phone, 'sms'));
     }
 
     /**
@@ -71,21 +57,10 @@ class LoginController extends BaseController{
     public function oauth_login(Request $request){
         $token = $request->input('token', '');
         $accessToken = $request->input('accessToken', '');
-        $res = \App\Api\Service\YidunMobileService::oauth($token, $accessToken);
+        $res = \App\Api\Service\Trigonal\YidunMobileService::oauth($token, $accessToken);
         if($res['code'] == 200){
             $phone = $res['data']['phone'];
-            $user = Users::where('phone', $phone)->first();
-            $is_register = 0;
-            if(!$user){  // 注册
-                $user = Users::create_data($phone);
-                $is_register = 1;
-            }
-            //登录
-            $token = Users::set_token($user->id);
-            return success('登录成功', array_merge(self::return_user_data($user), [
-                'user_token'=> $token,
-                'is_register'=> $is_register,
-            ]));
+            return success('登录成功', $this->service->login('phone', $phone, 'oauth'));
         }
         return error('登录失败', $res);
     }
@@ -98,32 +73,14 @@ class LoginController extends BaseController{
      */
     public function third_party_login(Request $request){
         $login_type = $request->input('login_type');
-        $unionid = $request->input('unionid');
-        $user = Users::where('unionid', $unionid)->first();
-        $is_register = 0;
-        if(!$user){
-            $user = Users::create_data('', '', 0, ['login_type'=> $login_type, 'unionid'=> $unionid]);
-            $is_register = 1;
+        if($login_type == '微信小程序'){
+            $code = $request->input('code', '');
+            $data = $this->service->wxmini_login($code);
         }
-        $token = Users::set_token($user->id);
-        return success('登录成功', array_merge(self::return_user_data($user), [
-            'user_token'=> $token,
-            'is_register'=> $is_register
-        ]));
-    }
-
-    /**
-     * 登录后返回的会员数据
-     *
-     * @param Eloquent $user_obj
-     * @return void
-     */
-    private static function return_user_data($user_obj){
-        return [
-            'uid'=> $user_obj->id,
-            'avatar'=> $user_obj->avatar,
-            'phone'=> $user_obj->phone,
-            'avatar'=> $user_obj->avatar,
-        ];
+        if(!empty($data['errmsg'])){
+            return error($data['errmsg']);
+        }else{
+            return success('登录成功', $data);
+        }
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace App\Api\Service;
+namespace App\Api\Service\Trigonal;
 
 
 class YidunMobileService{

@@ -10,14 +10,14 @@ class PasswordLoginRequest extends BaseRequest{
 
     public function rules(){
         return [
-            'phone' => ['required', 'size:11'],
+            'identity' => ['required', new \App\Api\Rules\IdentityVerify],
             'password' => ['required', new \App\Api\Rules\PasswordLoginVerify],
         ];
     }
 
     public function messages(){
         return [
-            'phone.required'=> '请填写手机号',
+            'identity.required'=> '请填写手机号',
             'password.required'=> '请填写密码'
         ];
     }

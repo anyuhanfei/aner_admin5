@@ -32,7 +32,18 @@ class UsersRepositories{
      */
     public function set_password($password){
         $salt = rand(10000, 999999);
-        return [self::encryption_password($password, $salt), $salt];
+        return [$this->encryption_password($password, $salt), $salt];
+    }
+
+    /**
+     * 验证密码
+     *
+     * @param Eloquent $user_obj 会员数据对象
+     * @param string $password 密码原码
+     * @return void
+     */
+    public function verify_password($user_obj, $password){
+        return $this->encryption_password($password, $user_obj->password_salt) == $user_obj->password;
     }
 
     /**
@@ -42,7 +53,7 @@ class UsersRepositories{
      * @return void
      */
     public function set_token($uid){
-        self::delete_token($uid);
+        $this->delete_token($uid);
         $user_token = md5(Hash::make(time()));
         Redis::set('user_token:' . $user_token, $uid);
         Redis::set('user_token:' . $uid, $user_token);
@@ -56,7 +67,7 @@ class UsersRepositories{
      * @return void
      */
     public function delete_token($uid){
-        $token = self::use_uid_get_token($uid);
+        $token = $this->use_uid_get_token($uid);
         Redis::delete('user_token:' . $token);
         Redis::delete('user_token:' . $uid);
         return true;
@@ -109,32 +120,51 @@ class UsersRepositories{
     }
 
     /**
-     * 验证密码
+     * 通过会员标识获取会员id
      *
-     * @param Eloquent $user_obj 会员数据对象
-     * @param string $password 密码原码
+     * @param string $field 字段
+     * @param string $value 值
      * @return void
      */
-    public function verify_password($user_obj, $password){
-        return self::encryption_password($password, $user_obj->password_salt) == $user_obj->password;
+    public function use_field_get_id($field, $value){
+        return Cache::remember("user_identity:{$field}:{$value}", 86400, function() use($field, $value){
+            return $this->eloquentClass::where($field, $value)->value('id');
+        });
     }
 
     /**
      * 通过指定字段获取会员信息
      *
-     * @param [type] $field
-     * @param [type] $value
+     * @param string $field 字段
+     * @param string $value 值
      * @return void
      */
     public function get_data($field, $value, $select = ['*']){
         if($field != 'id'){
-            $value = Cache::remember("user_identity:{$field}:{$value}", 86400, function() use($field, $value){
-                return $this->eloquentClass::where($field, $value)->value('id');
-            });
+            $value = $this->use_field_get_id($field, $value);
             $field = 'id';
         }
         return $this->eloquentClass::select($select)->find($value);
     }
+
+
+    /**
+     * 通过输入的会员标识获取具体的字段和会员id
+     *
+     * @param [type] $value
+     * @return void
+     */
+    public function use_identity_get_data($value){
+        $identity_type = config('project.users.user_identity');
+        foreach($identity_type as $v){
+            $uid = $this->use_field_get_id($v, $value);
+            if($uid){
+                return ['field'=> $v, 'value'=> $value, 'uid'=> $uid];
+            }
+        }
+        return false;
+    }
+
 
     /**
      * 传入要修改的字段与值，修改

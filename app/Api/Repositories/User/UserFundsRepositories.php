@@ -4,7 +4,7 @@ namespace App\Api\Repositories\User;
 use App\Models\User\UserFunds as Model;
 use App\Api\Repositories\Log\LogUserFundRepositories;
 
-class UsersRepositories{
+class UserFundsRepositories{
     protected $eloquentClass = Model::class;
 
     /**

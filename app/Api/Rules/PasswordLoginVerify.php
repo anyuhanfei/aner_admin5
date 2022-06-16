@@ -1,10 +1,10 @@
 <?php
 namespace App\Api\Rules;
 
-use App\Models\User\Users;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\DataAwareRule;
-use Illuminate\Support\Facades\Redis;
+
+use App\Api\Repositories\User\UsersRepositories;
 
 
 class PasswordLoginVerify implements Rule, DataAwareRule{
@@ -16,14 +16,12 @@ class PasswordLoginVerify implements Rule, DataAwareRule{
     }
 
     public function passes($attribute, $value){
-        $user = Users::get_data('phone', $this->data['phone']);
-        if(!$user){
-            return false;
-        }
-        return Users::verify_password($user, $value);
+        $user_repositories = new UsersRepositories();
+        $data = $user_repositories->use_identity_get_data($this->data['identity']);
+        return $user_repositories->verify_password($user_repositories->get_data('id', $data['uid']), $value);
     }
 
     public function message(){
-        return "账号或密码错误";
+        return "账号或密码错误!";
     }
 }
