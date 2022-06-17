@@ -10,14 +10,11 @@ use App\Api\Service\Trigonal\SmsService;
 class BaseController extends Controller{
     public function __construct(Request $request){
         // 获取当前登录的会员信息
-        $this->uid = 0;
-        $this->user = null;
-        $user_service = new UserService();
         if($request->hasHeader('token')){
-            $this->user = $user_service->use_token_get_user($request->header('token'));
-        }
-        if($this->user !== null){
-            $this->uid = $this->user->id;
+            $user_service = new UserService();
+            $this->uid = $user_service->use_token_get_uid($request->header('token'));
+        }else{
+            $this->uid = 0;
         }
         // 获取部分系统设置
         $this->setting['identity_field'] = config('project.users.user_identity')[0];

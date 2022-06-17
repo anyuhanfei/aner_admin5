@@ -144,7 +144,21 @@ class UsersRepositories{
             $value = $this->use_field_get_id($field, $value);
             $field = 'id';
         }
-        return $this->eloquentClass::select($select)->find($value);
+        $user = Cache::remember("user_data:{$value}", 86400, function() use($value){
+            return $this->eloquentClass::find($value);
+        });
+        $data = [];
+        foreach ($select as $value) {
+            if($value == "*"){
+                $data = $user;
+                unset($data['password']);
+                unset($data['level_password']);
+                unset($data['password_salt']);
+                break;
+            }
+            $data[$value] = $user->$value;
+        }
+        return json_decode(json_encode($data));
     }
 
 
@@ -173,15 +187,19 @@ class UsersRepositories{
      * @param [type] $data
      * @return void
      */
-    public function update_data($user_eloquent, $data){
-        foreach ($data as $key => $value) {
-            $user_eloquent->$key = $value;
-        }
-        return $user_eloquent->save();
+    public function update_data($uid, $data){
+        $this->delete_cache($uid);
+        return $this->eloquentClass::where('id', $uid)->update($data);
     }
 
+    /**
+     * 删除缓存中的会员信息
+     *
+     * @param [type] $id
+     * @return void
+     */
     public function delete_cache($id){
-        Redis::set('user_data:' . $id, null);
+        Cache::forget('user_data:' . $id);
         return true;
     }
 }

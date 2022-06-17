@@ -14,11 +14,11 @@ class UserService{
     /**
      * 修改会员数据
      *
-     * @param eloquent $user_eloquent 会员model对象
+     * @param int $uid 会员id
      * @param array $field_values 字段和值组成键值对的数组
      * @return void
      */
-    public function update_data($user_eloquent, $field_values){
+    public function update_data($uid, $field_values){
         $data = [];
         foreach($field_values as $field=> $value){
             switch($field){
@@ -30,7 +30,7 @@ class UserService{
                     break;
             }
         }
-        return $this->repositories->update_data($user_eloquent, $data);
+        return $this->repositories->update_data($uid, $data);
     }
 
     /**
@@ -83,18 +83,23 @@ class UserService{
     }
 
     /**
-     * 通过token获取到会员对象
+     * 通过token获取到会员id
      *
      * @param string $token token
      * @return void
      */
-    public function use_token_get_user($token){
-        $uid = $this->repositories->use_token_get_uid($token);
-        $user = null;
-        if($uid != 0){
-            $user = $this->repositories->get_data('id', $uid);
-        }
-        return $user;
+    public function use_token_get_uid($token){
+        return $this->repositories->use_token_get_uid($token);
+    }
+
+    /**
+     * 通过会员id获取到会员对象
+     *
+     * @param int $uid 会员id
+     * @return void
+     */
+    public function use_id_get_data($uid){
+        return $this->repositories->get_data('id', $uid);
     }
 
     //获取unionID
