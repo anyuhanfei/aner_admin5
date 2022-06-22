@@ -11,6 +11,7 @@
         "laravel/framework": "^9.11",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "socialiteproviders/weixin": "^4.1",
         "yansongda/laravel-pay": "~3.1.0"
     },
     "require-dev": {

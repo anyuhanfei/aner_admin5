@@ -72,15 +72,18 @@ class LoginController extends BaseController{
      * @return void
      */
     public function third_party_login(Request $request){
-        $login_type = $request->input('login_type');
-        if($login_type == '微信小程序'){
-            $code = $request->input('code', '');
-            $data = $this->service->wxmini_login($code);
+        $login_type = $request->input('login_type', '');
+        if (!in_array($login_type, ['weixin', 'qq', 'facebook', 'google', 'apple'])) {
+            return $this->failed('请求方式错误');
         }
-        if(!empty($data['errmsg'])){
-            return error($data['errmsg']);
-        }else{
-            return success('登录成功', $data);
+        $oauthUser = $this->service->get_third_party_data($login_type, $request->input('code', ''), [
+            'access_token'=> $request->input('access_token', ''),
+            'openid'=> $request->input('openid', ''),
+        ]);
+        if(is_string($oauthUser)){
+            return error($oauthUser);
         }
+        $user = $this->service->third_party_login($login_type, $oauthUser);
+        return success('登录成功', $this->service->login('open_id', $user->open_id, 'third_party'));
     }
 }

@@ -3,6 +3,7 @@ namespace App\Api\Service;
 
 use App\Api\Repositories\User\UsersRepositories;
 use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Facades\Socialite;
 
 class UserService{
     protected $repositories;
@@ -38,7 +39,7 @@ class UserService{
      *
      * @param string $field 会员标识
      * @param string $value 值
-     * @param string $type 登录类型，其中 password类型不能在登录时注册
+     * @param string $type 登录类型，其中密码登录，第三方登录不能在登录时注册
      * @return void
      */
     public function login($field, $value, $type = 'password', $create_data = []){
@@ -49,7 +50,7 @@ class UserService{
             'phone'=> $user->phone,
             'avatar'=> $user->avatar,
         ];
-        if(in_array($type, ['password'])){
+        if(!in_array($type, ['password', 'third_party'])){
             $data['is_register'] = 0;
             if(!$user){  // 注册
                 $user = $this->repositories->create_data($value, '', 0, $create_data);
@@ -80,6 +81,85 @@ class UserService{
         }else{
             return ['errmsg'=> $res['errmsg']];
         }
+    }
+
+    public function get_third_party_data(string $login_type, string $code = '', array $data = []){
+        if(in_array($login_type, ['weixin', 'qq', 'facebook', 'google', ])){
+            $driver = Socialite::driver($login_type);
+            // try{
+                if($code != ''){
+                    $response = $driver->getAccessTokenResponse($code);
+                    $token = empty($response['access_token']) ? null : $response['access_token'];
+                }else{
+                    $token = $data['access_token'];
+                    if($login_type == 'weixin'){
+                        $driver->setOpenId($data['openid']);
+                    }
+                }
+                $oauthUser = $driver->userFromToken($token);
+            // }catch(\Exception $e){
+            //     return '参数错误，未获取用户信息';
+            // }
+        }elseif(in_array($login_type, ['apple', ])){
+            try{
+                if($code != ''){
+                    $response = http('https://appleid.apple.com/auth/token', [
+                        'grant_type' => 'authorization_code',
+                        'code' => $code,
+                        'redirect_uri' => config('services.apple.redirect') ,
+                        'client_id' => config('services.apple.client_id') ,
+                        'client_secret' => config('services.apple.client_secret') ,
+                    ]);
+                    $id_token = $response->id_token;
+                }else{
+                    $id_token = $data['access_token'];
+                }
+                $oauthUser = json_decode(base64_decode(explode('.', $id_token) [1]));
+            }catch(\Exception $e){
+                return '参数错误，未获取用户信息';
+            }
+        }
+        return $oauthUser;
+    }
+
+    public function third_party_login($login_type, $oauthUser){
+        switch($login_type){
+            case 'qq':
+            case "weixin":
+            case "facebook":
+            case "google":
+                $open_id = $oauthUser->getId();
+                break;
+            case "apple":
+                $open_id = $oauthUser->sub;
+                break;
+        }
+        $user = $this->repositories->get_data('open_id', $open_id);
+        if(!$user){
+            switch($login_type){
+                case 'qq':
+                case "weixin":
+                    $nickname = $oauthUser->getNickname();
+                    $avatar = $oauthUser->getAvatar();
+                    break;
+                case "facebook":
+                case "google":
+                    $nickname = $oauthUser->getName();
+                    $avatar = $oauthUser->getAvatar();
+                    break;
+                case "apple":
+                    $nickname = array_key_exists('email', $oauthUser) ? $oauthUser->email : $faker->unique()->safeEmail;
+                    $avatar = '';
+                    break;
+            }
+            $user = $this->repositories->create_data('', '', 0, [
+                'type' => $login_type,
+                'nickname' => $nickname,
+                'avatar' => $avatar,
+                'open_id' => $open_id
+            ]);
+        }
+        return $user;
     }
 
     /**
