@@ -63,4 +63,26 @@ class SysNoticeRepositories{
             'content'=> $item->content
         ])]);
     }
+
+    /**
+     * 获取当前公告是否已读
+     *
+     * @param int $uid 会员id
+     * @param int $id 公告id
+     * @return bool
+     */
+    public function get_read_status($uid, $id){
+        return Redis::sismember('sys_notice:' . $uid, $id);
+    }
+
+    /**
+     * 将当前公告设置为已读
+     *
+     * @param int $uid 会员id
+     * @param int $id 公告id
+     * @return bool
+     */
+    public function set_read_status($uid, $id){
+        return Redis::sadd('sys_notice:' . $uid, $id);
+    }
 }

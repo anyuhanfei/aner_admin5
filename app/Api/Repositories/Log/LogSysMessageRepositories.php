@@ -69,4 +69,22 @@ class LogSysMessageRepositories{
     public function set_read_status($uid, $id){
         return Redis::sadd('sys_message_read:' . $uid, $id);
     }
+
+    /**
+     * 发送消息
+     *
+     * @param integer $uid 会员id，默认为0，表示向全体会员发送消息
+     * @param string $title 标题
+     * @param string $image 图片
+     * @param string $message 详细说明
+     * @return void
+     */
+    public function send_message($title, $uid = 0, $image = '', $message = ''){
+        return $this->eloquentClass::create([
+            'uid'=> $uid,
+            'title'=> $title,
+            'image'=> $image,
+            'message'=> $message
+        ]);
+    }
 }

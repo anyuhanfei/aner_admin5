@@ -84,11 +84,15 @@ class UserService{
     }
 
     public function get_third_party_data(string $login_type, string $code = '', array $data = []){
+        
         if(in_array($login_type, ['weixin', 'qq', 'facebook', 'google', ])){
             $driver = Socialite::driver($login_type);
             // try{
                 if($code != ''){
                     $response = $driver->getAccessTokenResponse($code);
+                    if(!empty($response['errcode'])){
+                        return "错误码：{$response['errcode']}, 错误信息：{$response['errmsg']}";
+                    }
                     $token = empty($response['access_token']) ? null : $response['access_token'];
                 }else{
                     $token = $data['access_token'];

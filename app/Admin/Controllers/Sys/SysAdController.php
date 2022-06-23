@@ -73,7 +73,7 @@ class SysAdController extends BaseController
                     $form->html('<span class="help-block"><i class="fa feather icon-help-circle"></i>&nbsp;请至少填写/上传以下三项中的一项</span>');
                     $form->text('value');
                     $form->image('image')->autoUpload();
-                    $form->editor('content')->height('600')->disk(config('project.upload_disk'));
+                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
                 })
                 ->options(SysAdModel::where('parent_id', 0)->get()->pluck('title', 'id'))
                 ->help('如果添加的是广告位，则不要选择广告位');

@@ -19,7 +19,7 @@ class SysNoticeController extends BaseController
     protected function grid()
     {
         return Grid::make(new SysNotice(), function (Grid $grid) {
-            switch(config('project.notice.type')) {
+            switch(config('admin.notice.type')) {
                 case '单条富文本':
                     SysNoticeModel::init();
                     $grid->column('title');
@@ -39,7 +39,7 @@ class SysNoticeController extends BaseController
                     $grid->disableCreateButton();
                     break;
             }
-            config('project.notice.image_show') ? $grid->column('image')->image('', 40, 40) : '';
+            config('admin.notice.image_show') ? $grid->column('image')->image('', 40, 40) : '';
             $grid->column('created_at');
             $grid->disableRowSelector();
             $grid->filter(function (Grid\Filter $filter) {
@@ -79,15 +79,15 @@ class SysNoticeController extends BaseController
     {
         return Form::make(new SysNotice(), function (Form $form) {
             $form->display('id');
-            config('project.notice.image_show') ? $form->image('image')->autoUpload() : '';
-            switch(config('project.notice.type')) {
+            config('admin.notice.image_show') ? $form->image('image')->autoUpload() : '';
+            switch(config('admin.notice.type')) {
                 case '单条富文本':
                     $form->text('title');
-                    $form->editor('content')->height('600')->disk(config('project.upload_disk'));
+                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
                     break;
                 case '多条富文本':
                     $form->text('title');
-                    $form->editor('content')->height('600')->disk(config('project.upload_disk'));
+                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
                     break;
                 default:
                     $form->text('title');

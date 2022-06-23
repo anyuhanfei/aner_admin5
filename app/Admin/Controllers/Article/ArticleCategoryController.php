@@ -20,7 +20,7 @@ class ArticleCategoryController extends BaseController
         return Grid::make(new ArticleCategory(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('name');
-            config('project.article.category_image_show') ? $grid->column('image')->image('', 40, 40) : '';
+            config('admin.article.category_image_show') ? $grid->column('image')->image('', 40, 40) : '';
 
             $grid->disableViewButton();
 
@@ -43,7 +43,7 @@ class ArticleCategoryController extends BaseController
 
             $form->display('id');
             $form->text('name');
-            config('project.article.category_image_show') ? $form->image('image')->autoUpload() : '';
+            config('admin.article.category_image_show') ? $form->image('image')->autoUpload() : '';
 
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();

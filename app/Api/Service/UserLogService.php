@@ -18,7 +18,7 @@ class UserLogService{
     }
 
     public function sys_message_log($uid, $page, $limit = 10){
-        $list_read = config('project.sys_message.list_read');
+        $list_read = config('admin.sys_message.list_read');
         $data = $this->log_sys_message_repositories->get_list($uid, $page, $limit);
         foreach($data as &$value){
             $value->is_read = $this->log_sys_message_repositories->get_read_status($uid, $value->id);

@@ -23,7 +23,7 @@ class SysService{
      */
     public function get_banners(){
         $banners = $this->sys_banner_repositories->get_all();
-        $url_show = config('project.banner.url_show');
+        $url_show = config('admin.banner.url_show');
         if($url_show == false){
             foreach($banners as $key => $value){
                 $banners[$key] = $value->image;
@@ -40,8 +40,8 @@ class SysService{
      * @return void
      */
     public function get_notice($id = 0){
-        $sys_type = config('project.notice.type');
-        $sys_image_show = config('project.notice.image_show');
+        $sys_type = config('admin.notice.type');
+        $sys_image_show = config('admin.notice.image_show');
         switch($sys_type){
             case '单条文字':
                 $notice = $this->sys_notice_repositories->getall()[0];

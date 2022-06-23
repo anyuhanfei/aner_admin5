@@ -17,7 +17,7 @@ class BaseController extends Controller{
             $this->uid = 0;
         }
         // 获取部分系统设置
-        $this->setting['identity_field'] = config('project.users.user_identity')[0];
+        $this->setting['identity_field'] = config('admin.users.user_identity')[0];
     }
 
     /**

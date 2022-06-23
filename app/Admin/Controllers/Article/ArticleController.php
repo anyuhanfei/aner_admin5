@@ -22,8 +22,8 @@ class ArticleController extends BaseController
         return Grid::make(new Article(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('title');
-            config('project.article.image_show') ? $grid->column('image')->image('', 40, 40) : '';
-            if(config('project.article.tag_show')){
+            config('admin.article.image_show') ? $grid->column('image')->image('', 40, 40) : '';
+            if(config('admin.article.tag_show')){
                 $grid->column('tag_ids')->display(function(){
                     $tag = ArticleTag::whereIn('id', json_decode($this->tag_ids))->get();
                     $str = '';
@@ -36,9 +36,9 @@ class ArticleController extends BaseController
             $grid->column('category_id')->display(function(){
                 return ArticleCategory::where('id', $this->category_id)->value('name');
             });
-            config('project.article.author_show') ? $grid->column('author') : '';
-            config('project.article.intro_show') ? $grid->column('intro')->limit(30, '...') : '';
-            config('project.article.keyword_show') ? $grid->column('keyword')->limit(30, '...') : '';
+            config('admin.article.author_show') ? $grid->column('author') : '';
+            config('admin.article.intro_show') ? $grid->column('intro')->limit(30, '...') : '';
+            config('admin.article.keyword_show') ? $grid->column('keyword')->limit(30, '...') : '';
             $grid->column('created_at');
             // $grid->disableViewButton();  # 隐藏展示按钮
             $grid->filter(function (Grid\Filter $filter) {
@@ -103,10 +103,10 @@ class ArticleController extends BaseController
                 return json_encode($value);
             });
             $form->select('category_id')->options(ArticleCategory::all()->pluck('name', 'id'));
-            config('project.article.image_show') ? $form->image('image')->autoUpload() : '';
+            config('admin.article.image_show') ? $form->image('image')->autoUpload() : '';
             $form->textarea('intro')->rows(3);
             $form->text('keyword');
-            $form->editor('content')->height('600')->disk(config('project.upload_disk'));
+            $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
 
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();

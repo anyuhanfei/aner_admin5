@@ -20,7 +20,7 @@ class LogUserFundController extends BaseController
         return Grid::make(new LogUserFund(), function (Grid $grid) {
             $grid->column('id')->sortable();
             $grid->column('uid');
-            $sys_user = config('project.users');
+            $sys_user = config('admin.users');
             $grid->column('user_identity')->display(function() use($sys_user){
                 $identity = $sys_user['user_identity'][0];
                 return $this->user->$identity;

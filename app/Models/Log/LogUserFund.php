@@ -21,7 +21,7 @@ class LogUserFund extends Model
     }
 
     protected function CoinType(): Attribute{
-        $coin_type = config('project.users.user_funds');
+        $coin_type = config('admin.users.user_funds');
         return Attribute::make(
             get: fn ($value) => $coin_type[$value],
         );

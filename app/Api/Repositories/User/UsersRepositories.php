@@ -107,7 +107,7 @@ class UsersRepositories{
     public function create_data($identity, $password = '', $parent_id = 0, $param = []){
         $password = $password == '' ? create_captcha(9, 'lowercase+uppercase+figure') : $password;
         [$password, $password_salt] = self::set_password($password);
-        $identity_field = config('project.users.user_identity')[0];
+        $identity_field = config('admin.users.user_identity')[0];
         $obj = $this->eloquentClass::create(array_merge([
             $identity_field=> $identity,
             'password'=> $password,
@@ -169,7 +169,7 @@ class UsersRepositories{
      * @return void
      */
     public function use_identity_get_data($value){
-        $identity_type = config('project.users.user_identity');
+        $identity_type = config('admin.users.user_identity');
         foreach($identity_type as $v){
             $uid = $this->use_field_get_id($v, $value);
             if($uid){

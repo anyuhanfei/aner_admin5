@@ -30,7 +30,7 @@ class SysSettingController extends BaseController{
             $grid->column('id')->sortable()->width('10%');
             $grid->column('title');
             $grid->column('value')->editable()->width("40%");
-            if(config('project.setting.line_button_show') == false){
+            if(config('admin.setting.line_button_show') == false){
                 $grid->disableViewButton();
                 $grid->disableEditButton();
                 $grid->disableDeleteButton();
