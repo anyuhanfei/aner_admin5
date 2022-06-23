@@ -103,7 +103,7 @@ class ArticleController extends BaseController
                 return json_encode($value);
             });
             $form->select('category_id')->options(ArticleCategory::all()->pluck('name', 'id'));
-            config('admin.article.image_show') ? $form->image('image')->autoUpload() : '';
+            config('admin.article.image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl() : '';
             $form->textarea('intro')->rows(3);
             $form->text('keyword');
             $form->editor('content')->height('600')->disk(config('admin.upload_disk'));

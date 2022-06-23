@@ -103,10 +103,7 @@ class UserController extends BaseController
                 $grid->model()->where('uid', $model->id);
                 $grid->id()->width("10%");
                 $grid->column('number', '金额')->width("10%");
-                $sys_user = config('admin.users');
-                $grid->column('coin_type', '资金类型')->width("10%")->display(function() use($sys_user){
-                    return $sys_user['user_funds'][$this->coin_type];
-                });
+                $grid->column('coin_type', '资金类型')->width("10%");
                 $grid->column('fund_type', '操作类型')->width("10%");
                 $grid->column('content', '详细说明')->width("20%");
                 $grid->column('remark', '备注')->width('15%');
@@ -130,7 +127,7 @@ class UserController extends BaseController
         return Form::make(User::with('funds'), function (Form $form) {
             $form->hidden('password_salt');
             if($form->isCreating()){
-                config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload()->required() : '';
+                config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload()->uniqueName()->saveFullUrl()->required() : '';
                 foreach(config('admin.users.user_identity') as $field){
                     $form->text($field)->required();
                 }
@@ -155,7 +152,7 @@ class UserController extends BaseController
             }else{
                 $form->tab('基本信息', function(Form $form){
                     $form->display('id');
-                    config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload() : '';
+                    config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload()->uniqueName()->saveFullUrl() : '';
                     foreach(config('admin.users.user_identity') as $field){
                         $form->text($field);
                     }
@@ -188,6 +185,9 @@ class UserController extends BaseController
                     if($form->level_password == null){
                         $form->deleteInput('level_password');
                     }
+                });
+                $form->saved(function(Form $form, $result){
+                    (new \App\Api\Repositories\User\UsersRepositories())->delete_cache($form->model()->id);
                 });
             }
             $form->hidden('is_login');

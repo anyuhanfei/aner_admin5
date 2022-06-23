@@ -79,7 +79,7 @@ class SysNoticeController extends BaseController
     {
         return Form::make(new SysNotice(), function (Form $form) {
             $form->display('id');
-            config('admin.notice.image_show') ? $form->image('image')->autoUpload() : '';
+            config('admin.notice.image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl() : '';
             switch(config('admin.notice.type')) {
                 case '单条富文本':
                     $form->text('title');

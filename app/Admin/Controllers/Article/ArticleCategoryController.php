@@ -43,7 +43,7 @@ class ArticleCategoryController extends BaseController
 
             $form->display('id');
             $form->text('name');
-            config('admin.article.category_image_show') ? $form->image('image')->autoUpload() : '';
+            config('admin.article.category_image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl() : '';
 
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();

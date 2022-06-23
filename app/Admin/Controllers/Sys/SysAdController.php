@@ -72,7 +72,7 @@ class SysAdController extends BaseController
                 ->when('!=', '', function(Form $form){
                     $form->html('<span class="help-block"><i class="fa feather icon-help-circle"></i>&nbsp;请至少填写/上传以下三项中的一项</span>');
                     $form->text('value');
-                    $form->image('image')->autoUpload();
+                    $form->image('image')->autoUpload()->uniqueName()->saveFullUrl();
                     $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
                 })
                 ->options(SysAdModel::where('parent_id', 0)->get()->pluck('title', 'id'))

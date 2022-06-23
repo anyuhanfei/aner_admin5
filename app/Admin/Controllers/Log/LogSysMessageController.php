@@ -76,7 +76,7 @@ class LogSysMessageController extends BaseController
             $form->display('id');
             $form->select('uid')->options(Users::all()->pluck('nickname', 'id'))->help('不选择表示所有会员');
             $form->text('title')->required();
-            config('admin.sys_message.image_show') ? $form->image('image')->autoUpload()->required() : '';
+            config('admin.sys_message.image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl()->required() : '';
             if(config('admin.sys_message.content_show')){
                 $form->editor('content')->height('600')->disk(config('admin.upload_disk'))->required();
             }else{

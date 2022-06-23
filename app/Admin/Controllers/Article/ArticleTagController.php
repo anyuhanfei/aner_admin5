@@ -42,7 +42,7 @@ class ArticleTagController extends BaseController
 
             $form->display('id');
             $form->text('name');
-            config('admin.article.tag_image_show') ? $form->image('image')->autoUpload() : '';
+            config('admin.article.tag_image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl() : '';
 
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();

@@ -12,7 +12,8 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "socialiteproviders/weixin": "^4.1",
-        "yansongda/laravel-pay": "~3.1.0"
+        "yansongda/laravel-pay": "~3.1.0",
+        "zgldh/qiniu-laravel-storage": "^9.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

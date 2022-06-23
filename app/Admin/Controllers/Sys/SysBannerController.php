@@ -39,7 +39,7 @@ class SysBannerController extends BaseController
     {
         return Form::make(new SysBanner(), function (Form $form) {
             $form->display('id');
-            $form->image('image')->autoUpload();
+            $form->image('image')->autoUpload()->uniqueName()->saveFullUrl();
             config('admin.banner.url_show') ? $form->text('url') : '';
             $form->saved(function(Form $form, $result){
                 Redis::del("banner");
