@@ -47,4 +47,13 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        // 自定义错误异常抛出
+        if ($exception instanceof BusinessException) {
+            return error($exception->getMessage());
+        }
+        return parent::render($request, $exception);
+    }
 }

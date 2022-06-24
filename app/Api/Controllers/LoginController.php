@@ -58,11 +58,8 @@ class LoginController extends BaseController{
         $token = $request->input('token', '');
         $accessToken = $request->input('accessToken', '');
         $res = \App\Api\Service\Trigonal\YidunMobileService::oauth($token, $accessToken);
-        if($res['code'] == 200){
-            $phone = $res['data']['phone'];
-            return success('登录成功', $this->service->login('phone', $phone, 'oauth'));
-        }
-        return error('登录失败', $res);
+        $phone = $res['data']['phone'];
+        return success('登录成功', $this->service->login('phone', $phone, 'oauth'));
     }
 
     /**

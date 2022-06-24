@@ -10,6 +10,7 @@ use Dcat\Admin\Show;
 use App\Models\Article\ArticleCategory;
 use App\Models\Article\ArticleTag;
 
+use Dcat\Admin\Widgets\Card;
 
 class ArticleController extends BaseController
 {
@@ -20,27 +21,33 @@ class ArticleController extends BaseController
      */
     protected function grid(){
         return Grid::make(new Article(), function (Grid $grid) {
-            $grid->column('id')->sortable();
-            $grid->column('title');
-            config('admin.article.image_show') ? $grid->column('image')->image('', 40, 40) : '';
+            $grid->fixColumns(3, -3);
+            $grid->column('id')->width("8%")->sortable();
+            $grid->column('title')->width("20%");
+            config('admin.article.image_show') ? $grid->column('image')->image('', 40, 40)->width("6%") : '';
             if(config('admin.article.tag_show')){
-                $grid->column('tag_ids')->display(function(){
+                $grid->column('tag_ids')->width("15%")->display(function(){
                     $tag = ArticleTag::whereIn('id', json_decode($this->tag_ids))->get();
                     $str = '';
                     foreach ($tag as $value) {
-                        $str .= $value->name . ' ';
+                        $str .= '<span class="label" style="background:#586cb1">' . $value->name . '</span>&nbsp;';
                     }
                     return $str;
-                })->limit(30, '...');
+                });
             }
             $grid->column('category_id')->display(function(){
                 return ArticleCategory::where('id', $this->category_id)->value('name');
+            })->width("10%");
+            config('admin.article.author_show') ? $grid->column('author')->width("10%") : '';
+            config('admin.article.intro_show') ? $grid->column('intro')->limit(20, '...')->width("20%") : '';
+            config('admin.article.keyword_show') ? $grid->column('keyword')->explode(' ')->label()->width("15%") : '';
+            $grid->column('content')->width('15%')->display('')->modal(function ($modal) {
+                $modal->title($this->title);
+                $this->content == null ? $modal->icon('feather ') : $modal->icon('feather icon-eye');
+                $card = new Card(null, $this->content);
+                return "<div style='padding:10px 10px 0'>$card</div>";
             });
-            config('admin.article.author_show') ? $grid->column('author') : '';
-            config('admin.article.intro_show') ? $grid->column('intro')->limit(30, '...') : '';
-            config('admin.article.keyword_show') ? $grid->column('keyword')->limit(30, '...') : '';
             $grid->column('created_at');
-            // $grid->disableViewButton();  # 隐藏展示按钮
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
                 $filter->like('title');

@@ -29,10 +29,9 @@ class YidunMobileService{
         $context = stream_context_create($options);
         $result = file_get_contents(self::$url, false, $context);
         if ($result === FALSE) {
-            return array("code" => 500, "msg" => "file_get_contents failed.");
-        } else {
-            return json_decode($result, true);
+            throwBusinessException("file_get_contents failed.");
         }
+        return json_decode($result, true);
     }
 
     public static function gen_signature($secretKey, $params){

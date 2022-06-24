@@ -1,11 +1,19 @@
 <?php
 
 function error($msg, $data = []){
-    return response()->json(['code'=> 500, 'msg'=> $msg, 'data'=> $data], 200);
+    return return_data(500, $msg, $data);
 }
 
 function success($msg, $data = []){
-    return response()->json(['code'=> 200, 'msg'=> $msg, 'data'=> $data], 200);
+    return return_data(200, $msg, $data);
+}
+
+function throwBusinessException($msg){
+    throw new \App\Exceptions\BusinessException($msg);
+}
+
+function return_data($code, $msg, $data){
+    return response()->json(['code'=> $code, 'msg'=> $msg, 'data'=> $data], 200);
 }
 
 /**

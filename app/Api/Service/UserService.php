@@ -84,7 +84,6 @@ class UserService{
     }
 
     public function get_third_party_data(string $login_type, string $code = '', array $data = []){
-        
         if(in_array($login_type, ['weixin', 'qq', 'facebook', 'google', ])){
             $driver = Socialite::driver($login_type);
             // try{
@@ -127,17 +126,10 @@ class UserService{
     }
 
     public function third_party_login($login_type, $oauthUser){
-        switch($login_type){
-            case 'qq':
-            case "weixin":
-            case "facebook":
-            case "google":
-                $open_id = $oauthUser->getId();
-                break;
-            case "apple":
-                $open_id = $oauthUser->sub;
-                break;
-        }
+        $open_id = match($login_type){
+            "qq", "weixin", "facebook", "google"=> $oauthUser->getId(),
+            "apple"=> $oauthUser->sub,
+        };
         $user = $this->repositories->get_data('open_id', $open_id);
         if(!$user){
             switch($login_type){
