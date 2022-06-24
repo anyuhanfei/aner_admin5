@@ -42,8 +42,8 @@ class ArticleCategoryController extends BaseController
             });
 
             $form->display('id');
-            $form->text('name');
-            config('admin.article.category_image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl() : '';
+            $form->text('name')->required();
+            config('admin.article.category_image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl()->required() : '';
 
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();

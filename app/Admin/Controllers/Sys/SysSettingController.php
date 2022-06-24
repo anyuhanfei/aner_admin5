@@ -28,8 +28,8 @@ class SysSettingController extends BaseController{
     private function tab($id){
         return Grid::make(SysSettingModel::where('parent_id', $id), function (Grid $grid) {
             $grid->column('id')->sortable()->width('10%');
-            $grid->column('title');
-            $grid->column('value')->editable()->width("40%");
+            $grid->column('title')->width("20%");
+            $grid->column('value')->textarea()->width("50%")->setAttributes(['style'=> 'word-break:break-all;']);
             if(config('admin.setting.line_button_show') == false){
                 $grid->disableViewButton();
                 $grid->disableEditButton();

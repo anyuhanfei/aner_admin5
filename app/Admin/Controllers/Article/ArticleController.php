@@ -76,7 +76,6 @@ class ArticleController extends BaseController
             $show->field('category_id')->as(function(){
                 return ArticleCategory::where('id', $this->category_id)->value('name');
             });;
-            
             $show->field('intro');
             $show->field('keyword');
             $show->field('content')->unescape();

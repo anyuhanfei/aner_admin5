@@ -79,18 +79,16 @@ class SysNoticeController extends BaseController
     {
         return Form::make(new SysNotice(), function (Form $form) {
             $form->display('id');
-            config('admin.notice.image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl() : '';
+            config('admin.notice.image_show') ? $form->image('image')->autoUpload()->uniqueName()->saveFullUrl()->required() : '';
+            $form->text('title')->required();
             switch(config('admin.notice.type')) {
                 case '单条富文本':
-                    $form->text('title');
-                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
+                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'))->required();
                     break;
                 case '多条富文本':
-                    $form->text('title');
-                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
+                    $form->editor('content')->height('600')->disk(config('admin.upload_disk'))->required();
                     break;
                 default:
-                    $form->text('title');
                     $form->hidden('content');
                     break;
             }

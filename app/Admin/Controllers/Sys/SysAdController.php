@@ -9,6 +9,7 @@ use Dcat\Admin\Show;
 use App\Admin\Controllers\BaseController;
 use App\Models\Sys\SysAd as SysAdModel;
 use Illuminate\Support\Facades\Redis;
+use Dcat\Admin\Widgets\Card;
 
 class SysAdController extends BaseController
 {
@@ -21,16 +22,20 @@ class SysAdController extends BaseController
     {
         return Grid::make(new SysAd(), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $grid->title->tree(true, false);
-            $grid->column('image')->image('', 60, 60);
-            $grid->column('value');
-            $grid->column('content')->display(function(){
-                return $this->content != null ? "请点击查看按钮查看详情" : '';
+            $grid->title->tree(true, false)->width('30%')->setAttributes(['style'=> 'word-break:break-all;']);
+            $grid->column('image')->image('', 60, 60)->width('10%');
+            $grid->column('value')->width('30%')->setAttributes(['style'=> 'word-break:break-all;']);
+            $grid->column('content')->width('10%')->display('')->modal(function ($modal) {
+                $modal->title($this->title);
+                $this->content == null ? $modal->icon('feather ') : $modal->icon('feather icon-eye');
+                $card = new Card(null, $this->content);
+                return "<div style='padding:10px 10px 0'>$card</div>";
             });
             $grid->filter(function (Grid\Filter $filter) {
                 $filter->equal('id');
 
             });
+            $grid->disableRowSelector();
         });
     }
 
