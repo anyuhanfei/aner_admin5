@@ -20,8 +20,6 @@ class UserController extends BaseController{
     }
 
     public function detail(){
-        var_dump($this->service->use_id_get_data($this->uid));
-        exit;
         return ['code'=> 200, 'msg'=> '会员详情', 'data'=> [$this->service->use_id_get_data($this->uid)]];
     }
 
