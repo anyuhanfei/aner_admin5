@@ -30,21 +30,25 @@ class UserController extends BaseController
                 $grid->column($field);
             }
             $sys_user = config('admin.users');
-            $grid->colum('资金')->display(function() use($sys_user){
-                $str = '';
-                foreach ($sys_user['user_funds'] as $key => $value) {
-                    $str .= $value . ': ' . $this->funds->$key . '<br/>';
-                }
-                return $str;
-            });
-            $grid->column('parent_id', '上级ID');
-            $grid->column('parent.phone', '上级标识')->display(function() use($sys_user){
-                if($this->parent_id == 0){
-                    return "";
-                }
-                $identity = $sys_user['user_identity'][0];
-                return $this->parent->$identity;
-            });
+            if(count($sys_user['user_funds']) > 0){
+                $grid->colum('资金')->display(function() use($sys_user){
+                    $str = '';
+                    foreach ($sys_user['user_funds'] as $key => $value) {
+                        $str .= $value . ': ' . $this->funds->$key . '<br/>';
+                    }
+                    return $str;
+                });
+            }
+            if($sys_user['parent_show']){
+                $grid->column('parent_id', '上级ID');
+                $grid->column('parent.phone', '上级标识')->display(function() use($sys_user){
+                    if($this->parent_id == 0){
+                        return "";
+                    }
+                    $identity = $sys_user['user_identity'][0];
+                    return $this->parent->$identity;
+                });
+            }
             $grid->column('is_login')->switch()->help('如果关闭则此会员无法登录');
             $grid->column('created_at');
             $grid->filter(function (Grid\Filter $filter) use($sys_user){
@@ -52,8 +56,10 @@ class UserController extends BaseController
                 $filter->like('nickname');
                 $identity = $sys_user['user_identity'][0];
                 $filter->like($identity, '会员标识');
-                $filter->like('parent_id', '上级会员ID');
-                $filter->like('parent.' . $identity, '上级会员标识');
+                if($sys_user['parent_show']){
+                    $filter->like('parent_id', '上级会员ID');
+                    $filter->like('parent.' . $identity, '上级会员标识');
+                }
                 $filter->equal('is_login')->select(['0'=> '冻结', '1'=> '正常']);
             });
         });
@@ -168,12 +174,14 @@ class UserController extends BaseController
                         })->help('不填写则不修改');
                     }
                 });
-                $form->tab('资产', function(Form $form){
-                    $user_funds = config('admin.users.user_funds');
-                    foreach ($user_funds as $key => $value) {
-                        $form->number('funds.' . $key, $value);
-                    }
-                });
+                if(count(config('admin.users.user_funds')) > 0){
+                    $form->tab('资产', function(Form $form){
+                        $user_funds = config('admin.users.user_funds');
+                        foreach ($user_funds as $key => $value) {
+                            $form->number('funds.' . $key, $value);
+                        }
+                    });
+                }
                 //判断是否填写了密码，并加密
                 $form->saving(function (Form $form) {
                     $form->avatar = $form->avatar ?? '';

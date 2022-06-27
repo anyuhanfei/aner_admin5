@@ -22,6 +22,11 @@ class LogUserFund extends Model
 
     protected function CoinType(): Attribute{
         $coin_type = config('admin.users.user_funds');
+        if(count($coin_type) == 0){
+            return Attribute::make(
+                get: fn ($value) => '未设置',
+            );
+        }
         return Attribute::make(
             get: fn ($value) => $coin_type[$value],
         );
