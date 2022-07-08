@@ -7,7 +7,6 @@ use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use App\Admin\Controllers\BaseController;
-use Illuminate\Support\Facades\Redis;
 
 class SysBannerController extends BaseController
 {
@@ -42,7 +41,7 @@ class SysBannerController extends BaseController
             $form->image('image')->autoUpload()->uniqueName()->saveFullUrl()->required();
             config('admin.banner.url_show') ? $form->text('url')->required() : '';
             $form->saved(function(Form $form, $result){
-                Redis::del("banner");
+                (new SysBanner())->del_cache_data();
             });
         });
     }

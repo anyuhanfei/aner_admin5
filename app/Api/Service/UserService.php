@@ -24,7 +24,7 @@ class UserService{
         foreach($field_values as $field=> $value){
             switch($field){
                 case "password":
-                    [$data['password'], $data['password_salt']] = $this->repositories->set_password($value);
+                    $data['password'] = $this->repositories->set_password($value);
                     break;
                 default:
                     $data[$field] = $value;

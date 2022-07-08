@@ -19,6 +19,7 @@ class SysNoticeController extends BaseController
     protected function grid()
     {
         return Grid::make(new SysNotice(), function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
             switch(config('admin.notice.type')) {
                 case '单条富文本':
                     SysNoticeModel::init();

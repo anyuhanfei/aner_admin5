@@ -52,7 +52,7 @@ class SysAdController extends BaseController
             $show->field('id');
             $show->field('title');
             $show->field('parent_id')->as(function(){
-                $sys_ad = SysAdModel::where('id', $this->parent_id)->first();
+                $sys_ad = (new SysAd())->get_parent($this->parent_id);
                 return $sys_ad ? $sys_ad->title : '';
             });
             $show->field('image')->image();
@@ -80,7 +80,7 @@ class SysAdController extends BaseController
                     $form->image('image')->autoUpload()->uniqueName()->saveFullUrl();
                     $form->editor('content')->height('600')->disk(config('admin.upload_disk'));
                 })
-                ->options(SysAdModel::where('parent_id', 0)->get()->pluck('title', 'id'))
+                ->options((new SysAd())->get_parent_list())
                 ->help('如果添加的是广告位，则不要选择广告位');
             $form->footer(function ($footer) {
                 $footer->disableViewCheck();
@@ -97,7 +97,7 @@ class SysAdController extends BaseController
                 }
             });
             $form->saved(function(Form $form, $result){
-                Redis::del("ad");
+                (new SysAd())->del_cache_data($form->id);
             });
         });
     }

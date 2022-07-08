@@ -13,4 +13,8 @@ class User extends EloquentRepository
      * @var string
      */
     protected $eloquentClass = Model::class;
+
+    public function get_parent_list(){
+        return $this->eloquentClass::all()->pluck('nickname', 'id');
+    }
 }

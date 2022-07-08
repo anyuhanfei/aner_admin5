@@ -22,6 +22,7 @@ class ArticleController extends BaseController
     protected function grid(){
         return Grid::make(new Article(), function (Grid $grid) {
             $grid->fixColumns(3, -3);
+            $grid->model()->orderBy('id', 'desc');
             $grid->column('id')->width("8%")->sortable();
             $grid->column('title')->width("20%");
             config('admin.article.image_show') ? $grid->column('image')->image('', 40, 40)->width("6%") : '';

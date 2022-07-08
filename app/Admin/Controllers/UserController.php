@@ -7,7 +7,6 @@ use App\Admin\Repositories\User;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
-use App\Models\User\Users as UsersModel;
 use App\Models\User\UserFunds;
 use App\Models\User\UserDetail;
 use App\Models\Log\LogUserOperation;
@@ -23,6 +22,7 @@ class UserController extends BaseController
     protected function grid()
     {
         return Grid::make(new User(), function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
             $grid->column('id')->sortable();
             config('admin.users.avatar_show') ? $grid->column('avatar')->image('', 40, 40) : '';
             config('admin.users.nickname_show') ? $grid->column('nickname') : '';
@@ -143,11 +143,11 @@ class UserController extends BaseController
                     $form->text('level_password')->required();
                 }
                 if(config('admin.users.parent_show')){
-                    $form->select('parent_id')->options(UsersModel::all()->pluck('nickname', 'id'));
+                    $form->select('parent_id', '选择上级')->options((new User())->get_parent_list());
                 }
                 //将输入的密码加密
                 $form->saving(function (Form $form) {
-                    [$form->password, $form->password_salt] = UsersModel::set_password($form->password);
+                    $form->password = password_hash($form->password, PASSWORD_DEFAULT);
                     $form->parent_id = $form->parent_id ?? 0;
                 });
                 // 同步创建资产表与详情表
@@ -188,7 +188,7 @@ class UserController extends BaseController
                     if($form->password == null){
                         $form->deleteInput('password');
                     }else{
-                        [$form->password, $form->password_salt] = UsersModel::set_password($form->password);
+                        $form->password = password_hash($form->password, PASSWORD_DEFAULT);
                     }
                     if($form->level_password == null){
                         $form->deleteInput('level_password');

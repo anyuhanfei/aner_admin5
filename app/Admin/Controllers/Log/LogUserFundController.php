@@ -18,6 +18,7 @@ class LogUserFundController extends BaseController
     protected function grid()
     {
         return Grid::make(new LogUserFund(), function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
             $grid->column('id')->sortable();
             $grid->column('uid');
             $sys_user = config('admin.users');

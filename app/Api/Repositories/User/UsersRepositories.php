@@ -14,25 +14,13 @@ class UsersRepositories{
     protected $eloquentClass = Model::class;
 
     /**
-     * 密码加密
-     *
-     * @param string $password 密码原码
-     * @param string $salt 盐
-     * @return string 加密密码
-     */
-    public function encryption_password($password, $salt){
-        return md5(md5($password) . $salt);
-    }
-
-    /**
      * 生成密码
      *
      * @param string $password 密码原码
-     * @return array 加密密码, 盐
+     * @return array 加密密码
      */
     public function set_password($password){
-        $salt = rand(10000, 999999);
-        return [$this->encryption_password($password, $salt), $salt];
+        return password_hash($password, PASSWORD_DEFAULT);
     }
 
     /**
@@ -43,7 +31,7 @@ class UsersRepositories{
      * @return void
      */
     public function verify_password($user_obj, $password){
-        return $this->encryption_password($password, $user_obj->password_salt) == $user_obj->password;
+        return password_verify($password, $user_obj->password);
     }
 
     /**
@@ -106,12 +94,11 @@ class UsersRepositories{
      */
     public function create_data($identity, $password = '', $parent_id = 0, $param = []){
         $password = $password == '' ? create_captcha(9, 'lowercase+uppercase+figure') : $password;
-        [$password, $password_salt] = self::set_password($password);
+        $password = self::set_password($password);
         $identity_field = config('admin.users.user_identity')[0];
         $obj = $this->eloquentClass::create(array_merge([
             $identity_field=> $identity,
             'password'=> $password,
-            'password_salt'=> $password_salt,
             'parent_id'=> $parent_id
         ], $param));
         UserFunds::create(['id'=> $obj->id]);

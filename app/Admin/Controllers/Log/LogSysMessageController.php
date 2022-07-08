@@ -8,7 +8,6 @@ use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use App\Admin\Controllers\BaseController;
 use App\Models\User\Users;
-use Illuminate\Support\Facades\Cache;
 
 class LogSysMessageController extends BaseController
 {
@@ -20,6 +19,7 @@ class LogSysMessageController extends BaseController
     protected function grid()
     {
         return Grid::make(new LogSysMessage(), function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
             $grid->column('id')->sortable();
             $grid->column('uid');
             $sys_user = config('admin.users');
@@ -87,11 +87,7 @@ class LogSysMessageController extends BaseController
                 $form->uid = $form->uid ?? 0;
             });
             $form->saved(function(Form $form, $result){
-                if($form->model()->uid == 0){
-                    Cache::tags(["sys_message"])->flush();
-                }else{
-                    Cache::tags(["sys_message:{$form->model()->uid}"])->flush();
-                }
+                (new LogSysMessage())->del_cache_data($form->model()->uid);
             });
             $form->disableViewCheck();
             $form->disableEditingCheck();

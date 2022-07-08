@@ -17,8 +17,8 @@ class SysSettingController extends BaseController{
         return Grid::make(new SysSetting(), function (Grid $grid) {
             $grid->wrap(function(){
                 $tab = Tab::make();
-                foreach (SysSettingModel::where('parent_id', 0)->get() as $value) {
-                    $tab->add($value->title, $this->tab($value->id));
+                foreach ((new SysSetting())->get_parent_list() as $key=> $value) {
+                    $tab->add($value, $this->tab($key));
                 }
                 return $tab;
             });
@@ -81,7 +81,7 @@ class SysSettingController extends BaseController{
             $form->input('remark', $form->model()->remark);
 
             $form->display('id');
-            $form->select('parent_id')->options(SysSettingModel::where('parent_id', 0)->get()->pluck('title', 'id'));
+            $form->select('parent_id')->options((new SysSetting())->get_parent_list());
             $form->text('title');
             # ['text'=> '普通字符', 'select'=> '下拉选项', 'redio'=> '单选项', 'onoff'=> '开关']
             $form->select('input_type')->options(['text'=> '普通字符']);
@@ -96,7 +96,7 @@ class SysSettingController extends BaseController{
                 }
             });
             $form->saved(function(Form $form, $result){
-                Redis::set("setting:{$form->model()->id}", $form->model()->value);
+                (new SysSetting())->del_cache_data($form->id);
             });
             $form->disableResetButton();
             $form->disableViewCheck();
