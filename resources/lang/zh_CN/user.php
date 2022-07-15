@@ -13,7 +13,6 @@ return [
         'nickname' => '昵称',
         'password' => '登录密码',
         'level_password' => '二级密码',
-        'password_salt' => '密码加盐',
         'pid' => '上级会员id',
         'is_login' => '状态',
         'create_at' => '注册时间',

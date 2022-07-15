@@ -131,7 +131,6 @@ class UserController extends BaseController
      */
     protected function form(){
         return Form::make(User::with('funds'), function (Form $form) {
-            $form->hidden('password_salt');
             if($form->isCreating()){
                 config('admin.users.avatar_show') ? $form->image('avatar')->autoUpload()->uniqueName()->saveFullUrl()->required() : '';
                 foreach(config('admin.users.user_identity') as $field){
